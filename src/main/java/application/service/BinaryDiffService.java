@@ -1,11 +1,8 @@
 package application.service;
 
+import application.service.exception.BinaryDiffException;
+
 public interface BinaryDiffService {
 
-	void setLeftFile(final Long id, final String file);
-
-	void setRightFile(final Long id, final String file);
-
-	String getDiff();
-
+	String getDiff(final String left, final String right) throws BinaryDiffException;
 }

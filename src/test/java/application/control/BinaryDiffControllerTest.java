@@ -7,6 +7,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.util.Base64;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,20 +37,21 @@ public class BinaryDiffControllerTest {
 	@Test
 	public void testSetLeftFile() throws Exception {
 		mvc.perform(post("/v1/diff/1/left").contentType(MediaType.APPLICATION_JSON)
-				.content(asJsonString("teste teste teste"))).andDo(print()).andExpect(status().isOk())
+				.content(asJsonBase64String("teste teste teste"))).andDo(print()).andExpect(status().isOk())
 				.andExpect(content().string(containsString("Sucesso")));
 	}
 
 	@Test
 	public void testSetRightFile() throws Exception {
 		mvc.perform(post("/v1/diff/1/right").contentType(MediaType.APPLICATION_JSON)
-				.content(asJsonString("teste teste teste"))).andDo(print()).andExpect(status().isOk())
+				.content(asJsonBase64String("teste teste teste"))).andDo(print()).andExpect(status().isOk())
 				.andExpect(content().string(containsString("Sucesso")));
 	}
 
-	private static String asJsonString(final Object obj) {
+	private static String asJsonBase64String(final Object obj) {
 		try {
-			return new ObjectMapper().writeValueAsString(obj);
+			return "{ \"data\":\""
+					+ Base64.getEncoder().encodeToString(new ObjectMapper().writeValueAsString(obj).getBytes()) + "\"}";
 		} catch (final Exception e) {
 			throw new RuntimeException(e);
 		}

@@ -1,10 +1,10 @@
-package app;
+package application;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 
-@ComponentScan({ "control", "service" })
+@ComponentScan({ "application.control", "application.service" })
 @SpringBootApplication
 public class Main {
 

@@ -1,7 +1,8 @@
-package control;
+package application.control;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -11,8 +12,11 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -23,8 +27,31 @@ public class BinaryDiffControllerTest {
 	private MockMvc mvc;
 
 	@Test
-	public void inicialTest() throws Exception {
+	public void testInicial() throws Exception {
 		mvc.perform(get("/v1/diff/")).andDo(print()).andExpect(status().isOk())
 				.andExpect(content().string(containsString("Binary Diff funcionando!")));
 	}
+
+	@Test
+	public void testSetLeftFile() throws Exception {
+		mvc.perform(post("/v1/diff/1/left").contentType(MediaType.APPLICATION_JSON)
+				.content(asJsonString("teste teste teste"))).andDo(print()).andExpect(status().isOk())
+				.andExpect(content().string(containsString("Sucesso")));
+	}
+
+	@Test
+	public void testSetRightFile() throws Exception {
+		mvc.perform(post("/v1/diff/1/right").contentType(MediaType.APPLICATION_JSON)
+				.content(asJsonString("teste teste teste"))).andDo(print()).andExpect(status().isOk())
+				.andExpect(content().string(containsString("Sucesso")));
+	}
+
+	private static String asJsonString(final Object obj) {
+		try {
+			return new ObjectMapper().writeValueAsString(obj);
+		} catch (final Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
 }

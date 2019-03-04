@@ -25,44 +25,46 @@ public class BinaryDiffServiceTest {
 	@Test
 	public void testGetDiff_equals() throws Exception {
 		final String obj64 = toBase64("teste teste teste");
-		assertThat(service.getDiff(obj64, obj64), equalTo(Messages.getString("diff_equals")));
+		service.setLeftFile(1L, obj64);
+		service.setRightFile(1L, obj64);
+		assertThat(service.getDiff(), equalTo(Messages.getString("diff_equals")));
 	}
 
 	@Test
 	public void testGetDiff_size() throws Exception {
-		final String left = toBase64("teste teste teste");
-		final String right = toBase64("teste teste teste teste");
-		assertThat(service.getDiff(left, right), equalTo(Messages.getString("diff_size")));
+		service.setLeftFile(1L, toBase64("teste teste teste"));
+		service.setRightFile(1L, toBase64("teste teste teste teste"));
+		assertThat(service.getDiff(), equalTo(Messages.getString("diff_size")));
 	}
 
 	@Test
 	public void testGetDiff_null() throws Exception {
 		expectedEx.expect(BinaryDiffException.class);
 		expectedEx.expectMessage(Messages.getString("error_both"));
-		service.getDiff(null, null);
+		service.getDiff();
 	}
 
 	@Test
 	public void testGetDiff_leftNull() throws Exception {
 		expectedEx.expect(BinaryDiffException.class);
 		expectedEx.expectMessage(Messages.getString("error_left"));
-		final String right = toBase64("teste teste teste teste");
-		service.getDiff(null, right);
+		service.setRightFile(1L, toBase64("teste teste teste teste"));
+		service.getDiff();
 	}
 
 	@Test
 	public void testGetDiff_rightNull() throws Exception {
 		expectedEx.expect(BinaryDiffException.class);
 		expectedEx.expectMessage(Messages.getString("error_right"));
-		final String left = toBase64("teste teste teste teste");
-		service.getDiff(left, null);
+		service.setLeftFile(1L, toBase64("teste teste teste teste"));
+		service.getDiff();
 	}
 
 	@Test
 	public void testGetDiff_diff() throws Exception {
-		final String obj1 = toBase64("teste texsa teste teste");
-		final String obj2 = toBase64("teste teste teste quest");
-		assertThat(service.getDiff(obj1, obj2),
+		service.setLeftFile(1L, toBase64("teste texsa teste teste"));
+		service.setRightFile(1L, toBase64("teste teste teste quest"));
+		assertThat(service.getDiff(),
 				equalTo(Messages.getString("diff", 9, 3) + ", " + Messages.getString("diff", 19, 5)));
 	}
 

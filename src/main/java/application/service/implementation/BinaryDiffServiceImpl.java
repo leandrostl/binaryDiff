@@ -1,26 +1,45 @@
 package application.service.implementation;
 
+import static java.util.Optional.ofNullable;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Service;
 
 import application.Messages;
+import application.domain.BinaryFile;
 import application.service.BinaryDiffService;
 import application.service.exception.BinaryDiffException;
 
 @Service
+@Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class BinaryDiffServiceImpl implements BinaryDiffService {
 
-	@Override
-	public String getDiff(final String left64, final String right64) {
-		validateNotNull(left64, right64);
+	private BinaryFile leftFile;
+	private BinaryFile rightFile;
 
-		final byte[] left = Base64.getDecoder().decode(left64);
-		final byte[] right = Base64.getDecoder().decode(right64);
+	@Override
+	public void setLeftFile(final Long id, final String base64) {
+		leftFile = new BinaryFile(id, base64);
+	}
+
+	@Override
+	public void setRightFile(final Long id, final String base64) {
+		rightFile = new BinaryFile(id, base64);
+	}
+
+	@Override
+	public String getDiff() {
+		validateNotNull();
+
+		final byte[] left = Base64.getDecoder().decode(leftFile.getData());
+		final byte[] right = Base64.getDecoder().decode(rightFile.getData());
 
 		if (left.length != right.length)
 			return Messages.getString("diff_size");
@@ -36,7 +55,9 @@ public class BinaryDiffServiceImpl implements BinaryDiffService {
 	 *
 	 * Caso sejam, lança exceção.
 	 */
-	private void validateNotNull(final String left64, final String right64) {
+	private void validateNotNull() {
+		final String left64 = ofNullable(leftFile).map(BinaryFile::getData).orElse(null);
+		final String right64 = ofNullable(rightFile).map(BinaryFile::getData).orElse(null);
 		if (left64 == null && right64 == null)
 			throw new BinaryDiffException(Messages.getString("error_both"));
 		if (left64 == null)

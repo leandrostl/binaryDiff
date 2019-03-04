@@ -9,9 +9,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import application.Messages;
 import application.service.exception.BinaryDiffException;
-import lombok.experimental.UtilityClass;
 
-public @UtilityClass class JsonUtils {
+public class JsonUtils {
 	public static String createJsonResult(final String key, final String value) {
 		final Map<String, String> map = new HashMap<>();
 		map.put(key, value);
@@ -28,5 +27,8 @@ public @UtilityClass class JsonUtils {
 		} catch (final IOException e) {
 			throw new BinaryDiffException(Messages.getString("error_read_data"));
 		}
+	}
+
+	private JsonUtils() {
 	}
 }

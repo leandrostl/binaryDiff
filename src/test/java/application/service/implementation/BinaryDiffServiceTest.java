@@ -5,34 +5,65 @@ import static org.junit.Assert.assertThat;
 
 import java.util.Base64;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import application.Messages;
 import application.service.BinaryDiffService;
+import application.service.exception.BinaryDiffException;
 
 public class BinaryDiffServiceTest {
+	@Rule
+	public ExpectedException expectedEx = ExpectedException.none();
+
 	private final BinaryDiffService service = new BinaryDiffServiceImpl();
 
 	@Test
 	public void testGetDiff_equals() throws Exception {
 		final String obj64 = toBase64("teste teste teste");
-		assertThat(service.getDiff(obj64, obj64), equalTo("true"));
+		assertThat(service.getDiff(obj64, obj64), equalTo(Messages.getString("diff_equals")));
 	}
 
 	@Test
 	public void testGetDiff_size() throws Exception {
-		final String obj1 = toBase64("teste teste teste");
-		final String obj2 = toBase64("teste teste teste teste");
-		assertThat(service.getDiff(obj1, obj2), equalTo("size"));
+		final String left = toBase64("teste teste teste");
+		final String right = toBase64("teste teste teste teste");
+		assertThat(service.getDiff(left, right), equalTo(Messages.getString("diff_size")));
+	}
+
+	@Test
+	public void testGetDiff_null() throws Exception {
+		expectedEx.expect(BinaryDiffException.class);
+		expectedEx.expectMessage(Messages.getString("error_both"));
+		service.getDiff(null, null);
+	}
+
+	@Test
+	public void testGetDiff_leftNull() throws Exception {
+		expectedEx.expect(BinaryDiffException.class);
+		expectedEx.expectMessage(Messages.getString("error_left"));
+		final String right = toBase64("teste teste teste teste");
+		service.getDiff(null, right);
+	}
+
+	@Test
+	public void testGetDiff_rightNull() throws Exception {
+		expectedEx.expect(BinaryDiffException.class);
+		expectedEx.expectMessage(Messages.getString("error_right"));
+		final String left = toBase64("teste teste teste teste");
+		service.getDiff(left, null);
 	}
 
 	@Test
 	public void testGetDiff_diff() throws Exception {
 		final String obj1 = toBase64("teste texsa teste teste");
 		final String obj2 = toBase64("teste teste teste quest");
-		assertThat(service.getDiff(obj1, obj2), equalTo("[offset: 9, length: 3], [offset: 19, length: 5]"));
+		assertThat(service.getDiff(obj1, obj2),
+				equalTo(Messages.getString("diff", 9, 3) + ", " + Messages.getString("diff", 19, 5)));
 	}
 
 	private static String toBase64(final Object obj) throws JsonProcessingException {

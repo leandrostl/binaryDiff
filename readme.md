@@ -60,11 +60,11 @@ Diferenciando os textos *"test test test test"* e *"azul test flor test"* obtemo
 ## Stack
 O projeto foi criado utilizando Java 8, Maven, Sprint Boot. Foram criados testes unitários para o *service* e testes de integração sobre o *controler*.
 #### Session Scoped
-Há inúmeras maneiras de se persistir os arquivos a serem comparados, poderia ter sido utilizado um banco em memória, que poderia acarretar em estouro de memória; poderia ser utilizado um banco de dados e, como foi feito, gravar os arquivos em *Stateful Service*.
+Há inúmeras maneiras de se persistir os arquivos a serem comparados, poderia ter sido utilizado um banco em memória, que poderia acarretar em estouro de memória; poderia ser utilizado um banco de dados ou, como foi feito, gravar os arquivos em um *Stateful Service* com escopo de sessão.
 
-As características da aplicação levaram a escolha do *Session Storage*. Como vantagem está a associação entre o usuário e os arquivos a serem comparados, não vazando informações entre usuários mesmo não sendo necessário fazer login e a limpeza da sessão assim que a conexão com o usuário é desfeita, não mantendo os arquivos em disco. 
+As características da aplicação levaram a escolha do *Session Storage*. Como vantagens há a associação entre o usuário e os arquivos a serem comparados, não vazando informações entre usuários mesmo não sendo necessário fazer login e a limpeza da sessão assim que a conexão com o usuário é desfeita, não mantendo os arquivos em disco. Mesmo se o usuário quiser comparar outros dois arquivos, basta enviá-los que eles sobrescreverão os arquivos na sessão.
 
-Poderia ter sido utilizado um banco de dados, mas para isso seria necessário o usuário fazer uma autenticação para que os dados gravados no banco pudessem ser acessados apenas por esse usuário. Seria necessário ainda limpar o banco quando o usuário deixasse a aplicação. Ressalta-se os custos de transações com o banco tanto para inserir os arquivos quanto para apagá-los posteriormente.
+Poderia ter sido utilizado um banco de dados, mas para isso seria necessário o usuário fazer uma autenticação para que os dados gravados no banco pudessem ser acessados apenas por esse usuário. Seria necessário ainda limpar o banco quando o usuário deixasse a aplicação. Ressalta-se os custos de transações com o banco tanto para inserir os arquivos quanto para apagá-los posteriormente e os custos financeiros de se ter uma banco de dados à disposição mesmo com o uso esparso.
 
 ### Algorítmo
 O *business* da aplicação é bastante simples e o algorítimo utilizado tem complexidade **O(n)**. 

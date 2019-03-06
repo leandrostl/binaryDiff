@@ -1,5 +1,9 @@
 package application.service;
 
+import java.util.List;
+
+import application.service.implementation.BinaryDiffServiceImpl.Diff;
+
 public interface BinaryDiffService {
 
 	/**
@@ -13,7 +17,7 @@ public interface BinaryDiffService {
 	 *         Para arrays diferentes - Posição da diferença e comprimento da mesma.
 	 *
 	 */
-	String getDiff();
+	List<Diff> getDiff();
 
 	/**
 	 * Cria e preenche o arquivo da esquerda.

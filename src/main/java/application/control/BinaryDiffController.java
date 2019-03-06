@@ -1,8 +1,11 @@
 package application.control;
 
-import static application.control.utils.JsonUtils.createJsonResult;
 import static application.control.utils.JsonUtils.getData;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -20,27 +23,26 @@ import application.service.BinaryDiffService;
 @RequestMapping("/v1")
 public class BinaryDiffController {
 
-	private static final String KEY_RESULT = Messages.getString("result");
-
-	private static final String RESULT_SUCCESS = createJsonResult(KEY_RESULT, Messages.getString("sucesso"));
-
 	@Autowired
 	private BinaryDiffService service;
 
+	@Autowired
+	private ModelMapper modelMapper;
+
 	@PostMapping(path = "/diff/{id}/left", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public @ResponseBody String setLeftFile(@PathVariable("id") final Long id, @RequestBody final String file) {
+	public @ResponseBody ResultDto setLeftFile(@PathVariable("id") final Long id, @RequestBody final String file) {
 		service.setLeftFile(id, getData(file));
-		return RESULT_SUCCESS;
+		return new ResultDto(Messages.getString("success"));
 	}
 
 	@PostMapping(path = "/diff/{id}/right", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public @ResponseBody String setRightFile(@PathVariable("id") final Long id, @RequestBody final String file) {
+	public @ResponseBody ResultDto setRightFile(@PathVariable("id") final Long id, @RequestBody final String file) {
 		service.setRightFile(id, getData(file));
-		return RESULT_SUCCESS;
+		return new ResultDto(Messages.getString("success"));
 	}
 
 	@GetMapping(path = "/diff")
-	public @ResponseBody String getDiff() {
-		return createJsonResult(KEY_RESULT, service.getDiff());
+	public @ResponseBody List<DiffDto> getDiff() {
+		return service.getDiff().stream().map(d -> modelMapper.map(d, DiffDto.class)).collect(Collectors.toList());
 	}
 }

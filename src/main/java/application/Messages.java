@@ -6,7 +6,7 @@ import java.util.ResourceBundle;
 
 public class Messages {
 
-	private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle("application.messages");
+	private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle("messages");
 
 	private Messages() {
 	}

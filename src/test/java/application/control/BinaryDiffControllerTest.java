@@ -32,7 +32,7 @@ import application.Messages;
 @AutoConfigureMockMvc
 public class BinaryDiffControllerTest {
 
-	private static final String RETURN_SUCESSO = Messages.getString("sucesso");
+	private static final String RETURN_SUCESSO = Messages.getString("success");
 	private static final String URL_DIFF = "/v1/diff";
 	private static final String URL_RIGHT = "/v1/diff/1/right";
 	private static final String URL_LEFT = "/v1/diff/1/left";
@@ -58,7 +58,7 @@ public class BinaryDiffControllerTest {
 		testSetFile(URL_RIGHT, data, RETURN_SUCESSO, session);
 
 		mvc.perform(get(URL_DIFF).session(session)).andDo(print()).andExpect(status().isOk())
-				.andExpect(jsonPath("$." + Messages.getString("result"), equalTo(Messages.getString("diff_equals"))));
+				.andExpect(jsonPath("$[0].message", equalTo(Messages.getString("diff_equals"))));
 	}
 
 	@Test
@@ -68,7 +68,7 @@ public class BinaryDiffControllerTest {
 		testSetFile(URL_RIGHT, "test test", RETURN_SUCESSO, session);
 
 		mvc.perform(get(URL_DIFF).session(session)).andDo(print()).andExpect(status().isOk())
-				.andExpect(jsonPath("$." + Messages.getString("result"), equalTo(Messages.getString("diff_size"))));
+				.andExpect(jsonPath("$[0].message", equalTo(Messages.getString("diff_size"))));
 	}
 
 	@Test
@@ -77,9 +77,16 @@ public class BinaryDiffControllerTest {
 		testSetFile(URL_LEFT, "teste texsa teste teste", RETURN_SUCESSO, session);
 		testSetFile(URL_RIGHT, "teste teste teste quest", RETURN_SUCESSO, session);
 
-		mvc.perform(get(URL_DIFF).session(session)).andDo(print()).andExpect(status().isOk())
-				.andExpect(jsonPath("$." + Messages.getString("result"),
-						equalTo(Messages.getString("diff", 9, 3) + ", " + Messages.getString("diff", 19, 5))));
+		final String result = mvc.perform(get(URL_DIFF).session(session)).andExpect(status().isOk()).andDo(print())
+				.andReturn().getResponse().getContentAsString();
+		final DiffDto[] diffs = new ObjectMapper().readValue(result, DiffDto[].class);
+
+		assertThat(diffs[0].getMessage(), equalTo(Messages.getString("different")));
+		assertThat(diffs[1].getMessage(), equalTo(Messages.getString("different")));
+		assertThat(diffs[0].getOffset(), equalTo(9));
+		assertThat(diffs[1].getOffset(), equalTo(19));
+		assertThat(diffs[0].getLength(), equalTo(3));
+		assertThat(diffs[1].getLength(), equalTo(5));
 	}
 
 	@Test

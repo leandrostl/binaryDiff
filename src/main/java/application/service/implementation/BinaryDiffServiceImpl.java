@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
@@ -35,17 +34,17 @@ public class BinaryDiffServiceImpl implements BinaryDiffService {
 	}
 
 	@Override
-	public String getDiff() {
+	public List<Diff> getDiff() {
 		validateNotNull();
 
 		final byte[] left = Base64.getDecoder().decode(leftFile.getData());
 		final byte[] right = Base64.getDecoder().decode(rightFile.getData());
 
 		if (left.length != right.length)
-			return Messages.getString("diff_size");
+			return Arrays.asList(new Diff(Messages.getString("diff_size")));
 
 		if (Arrays.equals(left, right))
-			return Messages.getString("diff_equals");
+			return Arrays.asList(new Diff(Messages.getString("diff_equals")));
 
 		return diffBytes(left, right);
 	}
@@ -72,9 +71,10 @@ public class BinaryDiffServiceImpl implements BinaryDiffService {
 	 * Retorna as posições em que as diferenças foram encontradas e o comprimento
 	 * contíguo das diferenças.
 	 */
-	private String diffBytes(final byte[] left, final byte[] right) {
+	private List<Diff> diffBytes(final byte[] left, final byte[] right) {
 		final List<Diff> diffs = new ArrayList<>();
 		Diff current = null;
+
 		for (int i = 0; i < left.length; i++) {
 			final byte leftByte = left[i];
 			final byte rightByte = right[i];
@@ -93,20 +93,48 @@ public class BinaryDiffServiceImpl implements BinaryDiffService {
 			}
 		}
 
-		return diffs.stream().map(Diff::toString).collect(Collectors.joining(", "));
+		return diffs;
 	}
 
-	private static final class Diff {
-		final int offset;
-		int length;
+	public static final class Diff {
+		private String message;
+		private int offset;
+		private int length;
+
+		public Diff() {
+		}
 
 		public Diff(final int offset) {
+			message = Messages.getString("different");
 			this.offset = offset;
 		}
 
-		@Override
-		public String toString() {
-			return Messages.getString("diff", offset, length);
+		public Diff(final String message) {
+			this.message = message;
+		}
+
+		public String getMessage() {
+			return message;
+		}
+
+		public void setMessage(final String message) {
+			this.message = message;
+		}
+
+		public int getOffset() {
+			return offset;
+		}
+
+		public void setOffset(final int offset) {
+			this.offset = offset;
+		}
+
+		public int getLength() {
+			return length;
+		}
+
+		public void setLength(final int length) {
+			this.length = length;
 		}
 	}
 

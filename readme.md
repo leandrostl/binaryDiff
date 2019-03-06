@@ -10,7 +10,7 @@ Para executar o projeto, faça o clone desse repositório e na pasta do projeto,
 * Arquivo da direita: http://localhost:8080/v1/diff/{id}/right
 * Diferença: http://localhost:8080/v1/diff
 
-Os endpoints para inserção de arquivos da direita e da esquerda são requisições **POST** que recebem como *Request Parameter* um id para o arquivo e como *Request Body* um Json com o campo **data** contendo uma string representando o arquivo binário codificado para base64. O resultado é um Json com o campo *result* igual a *success*.
+Os endpoints para inserção de arquivos da direita e da esquerda são requisições **POST** que recebem como *Path Parameter* um id para o arquivo e como *Request Body* um Json com o campo **data** contendo uma string representando o arquivo binário codificado para base64. O resultado é um Json com o campo *result* igual a *success*.
 
 **Ex:**
 http://localhost:8080/v1/diff/1/left

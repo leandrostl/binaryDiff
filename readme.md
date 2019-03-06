@@ -2,6 +2,9 @@
 
 Essa aplicação permite inserir dois Json com binários codificados como String Base64, cada um em em *endpoint* e em um terceiro *endpoint* obter a diferença entre esses arquivos.
 
+### Execução
+Para executar o projeto, faça o clone desse repositório e na pasta do projeto, com o Maven instalado, execute o comando `mvn spring-boot:run`. O serviço poderá ser testado a partir dos endpoints descritos a seguir.
+
 ### Endpoint
 * Arquivo da esquerda: http://localhost:8080/v1/diff/{id}/left
 * Arquivo da direita: http://localhost:8080/v1/diff/{id}/right
